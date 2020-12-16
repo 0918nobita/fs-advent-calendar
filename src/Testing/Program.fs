@@ -1,3 +1,5 @@
+module Program
+
 let myCheck (f : int -> int -> bool) =
     let rand = System.Random()
     for _ in 1..100 do
