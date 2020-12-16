@@ -7,6 +7,24 @@ let myCheck (f : int -> int -> bool) =
         let y = rand.Next()
         assert f x y
 
+module internal Common =
+    open System.Collections.Generic
+
+    let memorizeWith (memo : IDictionary<'a, 'b>) (f : 'a -> 'b) (n : 'a) =
+        lock memo (fun _ ->
+            match memo.TryGetValue n with
+            | true, res -> res
+            | _ ->
+                let res = f n
+                memo.Add(n, res)
+                res)
+
+    let memorize (f : 'a -> 'b) =
+        let t = new Dictionary<'a, 'b>()
+        memorizeWith t f
+
+    let (|MapContains|_|) = Map.tryFind
+
 open FsCheck
 
 let revRevIsOrig (xs: int list) =
