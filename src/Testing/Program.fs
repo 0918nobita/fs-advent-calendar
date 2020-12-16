@@ -25,6 +25,23 @@ module internal Common =
 
     let (|MapContains|_|) = Map.tryFind
 
+open Microsoft.FSharp.Reflection
+
+module internal Reflect =
+    open System
+
+    let isRecordType (ty : Type) = FSharpType.IsRecord(ty, true)
+
+    let isUnionType (ty: Type) = FSharpType.IsUnion(ty, true)
+
+    let isTupleType (ty: Type) = FSharpType.IsTuple ty
+
+type MyRecord = { MyRecordField: int }
+
+type MyTuple = int * bool
+
+type MyUnion = CA of int | CB of bool
+
 open FsCheck
 
 let revRevIsOrig (xs: int list) =
@@ -47,6 +64,12 @@ let listAppend x =
 [<EntryPoint>]
 let main argv =
     myCheck (fun x y -> x - y = (-1) * (y - x))
+
+    printfn "%s is RecordType: %b" (nameof MyRecord) (Reflect.isRecordType typeof<MyRecord>)
+    printfn "%s is UnionType: %b" (nameof MyUnion) (Reflect.isUnionType typeof<MyUnion>)
+    printfn "%s is TupleType: %b" (nameof MyTuple) (Reflect.isTupleType typeof<MyTuple>)
+    printfn "%s's constructors: %A" (nameof MyUnion) (FSharpType.GetUnionCases(typeof<MyUnion>, true))
+
     Check.Quick revRevIsOrig
     Check.Quick productOfTwoPosNumsIsPosNum
     Check.Quick listLength
