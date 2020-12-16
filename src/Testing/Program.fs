@@ -1,3 +1,10 @@
+let myCheck (f : int -> int -> bool) =
+    let rand = System.Random()
+    for _ in 1..100 do
+        let x = rand.Next()
+        let y = rand.Next()
+        assert f x y
+
 open FsCheck
 
 let revRevIsOrig (xs: int list) =
@@ -19,6 +26,7 @@ let listAppend x =
 
 [<EntryPoint>]
 let main argv =
+    myCheck (fun x y -> x - y = (-1) * (y - x))
     Check.Quick revRevIsOrig
     Check.Quick productOfTwoPosNumsIsPosNum
     Check.Quick listLength
